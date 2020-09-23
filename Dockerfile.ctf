@@ -1,0 +1,59 @@
+# This is the Dockerfile for those CTF Players who only 
+# need RISC-V gdb utilis and user/system mode QEMU
+# Also python3 support for gdb is enabled during compilation
+
+FROM ubuntu:18.04 AS build_env
+
+RUN apt -y update \
+    && apt install -y autoconf automake autotools-dev curl \
+    libmpc-dev libmpfr-dev libgmp-dev \
+    python3 pkg-config libglib2.0-dev libpixman-1-dev gawk \
+    build-essential bison flex texinfo gperf libtool patchutils \
+    bc zlib1g-dev libexpat-dev git 
+
+WORKDIR /tmp
+
+# Use QEMU v5.0.0, keep the same version as RISC-V
+RUN mkdir riscv-qemu-linux \ 
+    && cd riscv-qemu-linux \
+    && git clone --depth=1 --branch=v5.0.0 https://github.com/qemu/qemu
+
+WORKDIR /tmp/riscv-qemu-linux/qemu
+
+# Build qemu with system emulation 
+# Build target: riscv64-softmmu and riscv32-softmmu with system
+RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
+    && make -j $(nproc) \
+    && make install \
+    && make clean \
+    && mkdir -p /opt/qemu-riscv-static \
+    # Build user mode riscv QEMU
+    && ./configure --target-list=riscv32-linux-user,riscv64-linux-user \
+    --static \
+    --disable-system \
+    --enable-linux-user \
+    --prefix=/opt/qemu-riscv-static \
+    && make -j $(nproc) \
+    && make install \
+    && make clean \
+    && rm -rf /tmp/riscv-qemu-linux/qemu
+
+WORKDIR /tmp/riscv-qemu-linux/
+
+# Build risc-v 32/64 gdb with python3 enabled
+RUN git clone --depth=1 https://github.com/riscv/riscv-binutils-gdb.git \
+    && export CPPFLAGS='-I/usr/include/python3.6/' \
+    && export LDFLAGS='-L/usr/lib/python3.6/' \
+    && export LC_CTYPE=C.UTF-8 \
+    && mkdir /opt/riscv-binutils-gdb \
+    && cd riscv-binutils-gdb \
+    && ./configure --prefix=/opt/riscv64-binutils-gdb --target riscv64-unknown-elf -enable-multilib --with-python \
+    && make -j $(nproc) \
+    && make install \
+    && rm -rf /tmp/riscv-qemu-linux/riscv-binutils-gdb
+
+WORKDIR /root
+# Install GEF for gdb https://github.com/hugsy/gef
+RUN sh -c "$(curl -fsSL http://gef.blah.cat/sh)"
+
+
