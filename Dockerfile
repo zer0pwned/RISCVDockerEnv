@@ -24,14 +24,14 @@ RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
 WORKDIR /tmp/riscv-gnu-toolchain
 
 # Build 32 bit RISC-V toolchain for both newlib and linux 
-RUN ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb --enable_linux \
-    && make -j $(nproc) && make clean   
-    #&& make -j $(nproc) linux && make clean 
+RUN ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
+    && make -j $(nproc) && make clean \
+    && make -j $(nproc) linux && make clean 
 
 # Build 64 bit RISC-V toolchain for both newlib and linux 
 RUN ./configure --prefix=/opt/riscv64 --enable-gdb \
-    && make -j $(nproc) && make clean 
-    #&& make -j $(nproc) linux && make clean 
+    && make -j $(nproc) && make clean \
+    && make -j $(nproc) linux && make clean 
 
 # Build QEMU for system emulation 
 FROM build_riscv_toolchain_32_64 AS build_qemu_system_32_64
