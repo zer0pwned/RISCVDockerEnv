@@ -12,25 +12,27 @@ RUN apt -y update \
 # Build 32/64 bits RISC-V toolchain from source code
 # FROM build_env AS build_riscv_toolchain_32_64
     
-WORKDIR /tmp
-RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
-
 # Although `--enable-multilib` is supported during configuration stage
 # I still would rather to have them compiled seperately as my main goal
 # is the gdb functionality 
-WORKDIR /tmp/riscv-gnu-toolchain
+
+# WORKDIR /tmp/riscv-gnu-toolchain
+# git layer takes about 5.94GB storage and makes the entire image size to 
+# 11.4GB. It's just insane so I just merged this part into compilation stage 
 
 # Build 32/64 bits RISC-V toolchain for both newlib and linux 
-RUN mkdir -p /opt/riscv32 \
+RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain \
+    && mkdir -p /opt/riscv32 \
     && mkdir -p /opt/riscv64 \
+    && cd /tmp/riscv-gnu-toolchain \
     && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) && make clean \
-    && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
+    # && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) linux && make clean \
     # Here we build 64 bits version
     && ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) && make clean \
-    && ./configure --prefix=/opt/riscv64 --enable-gdb \
+    # && ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) linux && make clean \
     && rm -rf /tmp/riscv-gnu-toolchain
 
