@@ -1,7 +1,5 @@
-# FROM build_qemu_system_32_64 AS build_qemu_user_32_64
 # Install all dependency we need so we dont have to 
 # install them during every different buidling stage
-
 FROM ubuntu:18.04 AS build_env
 
 RUN apt -y update \
@@ -11,6 +9,7 @@ RUN apt -y update \
     build-essential bison flex texinfo gperf libtool patchutils \
     bc zlib1g-dev libexpat-dev git 
 
+# Build 32/64 bits RISC-V toolchain from source code
 FROM build_env AS build_riscv_toolchain_32_64
 
 RUN mkdir -p /opt/riscv32 \
@@ -19,11 +18,12 @@ RUN mkdir -p /opt/riscv32 \
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
 
-WORKDIR /tmp/riscv-gnu-toolchain
-# Build 32 bit RISC-V toolchain for both newlib and linux 
 # Although `--enable-multilib` is supported during configuration stage
 # I still would rather to have them compiled seperately as my main goal
 # is the gdb functionality 
+WORKDIR /tmp/riscv-gnu-toolchain
+
+# Build 32 bit RISC-V toolchain for both newlib and linux 
 RUN ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb --enable_linux \
     && make -j $(nproc) && make clean   
     #&& make -j $(nproc) linux && make clean 
@@ -33,12 +33,12 @@ RUN ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) && make clean 
     #&& make -j $(nproc) linux && make clean 
 
-# Build 
+# Build QEMU for system emulation 
 FROM build_riscv_toolchain_32_64 AS build_qemu_system_32_64
 
 WORKDIR /tmp
 
-# Use Qemu v5.1 
+# Use QEMU v5.0.0, keep the same version as RISC-V
 RUN mkdir riscv-qemu-linux \ 
     && cd riscv-qemu-linux \
     && git clone --depth=1 --branch=v5.0.0 https://github.com/qemu/qemu
@@ -55,8 +55,3 @@ RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
 # TODO: Build qemu with user mode and we would like it to be statically linked
 
 # TODO: Clean all pulled and generated files
-
-
-
-
-
