@@ -42,7 +42,7 @@ RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
 WORKDIR /tmp/riscv-qemu-linux/
 
 # Build risc-v 32/64 gdb with python3 enabled
-RUN apt update -y && apt install python3-dev \
+RUN apt update -y && apt install python3-dev wget python3-pip -y \
     && git clone --depth=1 https://github.com/riscv/riscv-binutils-gdb.git \
     && export CPPFLAGS='-I/usr/include/python3.6/' \
     && export LDFLAGS='-L/usr/lib/python3.6/' \
@@ -50,7 +50,7 @@ RUN apt update -y && apt install python3-dev \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1 \
     && mkdir /opt/riscv-binutils-gdb \
     && cd riscv-binutils-gdb \
-    && ./configure --prefix=/opt/riscv64-binutils-gdb --target riscv64-unknown-elf -enable-multilib --with-python \
+    && ./configure --prefix=/opt/riscv-binutils-gdb --target riscv64-unknown-elf -enable-multilib --with-python \
     && make -j $(nproc) \
     && make install \
     && rm -rf /tmp/riscv-qemu-linux/riscv-binutils-gdb \
@@ -58,6 +58,7 @@ RUN apt update -y && apt install python3-dev \
 
 WORKDIR /root
 # Install GEF for gdb https://github.com/hugsy/gef
-RUN sh -c "$(curl -fsSL http://gef.blah.cat/sh)"
+RUN pip3 install capstone unicorn keystone-engine ropper \
+    && sh -c "$(curl -fsSL http://gef.blah.cat/sh)"
 
 
