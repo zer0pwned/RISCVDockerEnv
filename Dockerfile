@@ -28,7 +28,7 @@ RUN mkdir -p /opt/riscv32 \
     && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) linux && make clean \
     # Here we build 64 bits version
-    ./configure --prefix=/opt/riscv64 --enable-gdb \
+    && ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) && make clean \
     && ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) linux && make clean \
@@ -36,6 +36,7 @@ RUN mkdir -p /opt/riscv32 \
 
 # Build QEMU for system emulation 
 # FROM build_riscv_toolchain_32_64 AS build_qemu_system_32_64
+# Removed this FROM AS statement to reduce the storage occupation 
 
 WORKDIR /tmp
 
