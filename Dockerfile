@@ -52,6 +52,18 @@ RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
     && make install \
     && make clean
 
-# TODO: Build qemu with user mode and we would like it to be statically linked
+# DONE: Build qemu with user mode and we would like it to be statically linked
+RUN mkdir -p /opt/qemu-riscv-static \
+    && ./configure --target-list=riscv32-linux-user,riscv64-linux-user \
+    --static \
+    --disable-system \
+    --enable-linux-user \
+    --prefix=/opt/qemu-riscv-static \
+    && make -j $(nproc) \
+    && make install \
+    && make clean
 
-# TODO: Clean all pulled and generated files
+# DONE: Clean all pulled and generated files
+RUN rm -rf /tmp/riscv-qemu-linux && rm -rf /tmp/riscv-gnu-toolchain
+
+WORKDIR /root

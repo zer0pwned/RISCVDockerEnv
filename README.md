@@ -8,7 +8,7 @@ I was working on a RISC-V ELF CTF challenge. The provided ELF itself was compile
 for SiFive and can be emulated by QEMU, e.g., `qemu-system-riscv32 -nographic -machine sifive_e -kernel xxx.elf`. 
 Of course QEMU can be used as GDB server so I can remote into emulated environment 
 and trace the execution but my GDB just does not support such architecture. I tried 
-to tap into RISC-V brew repository, compile their toolchian and perform and quick 
+to tap into RISC-V brew repository, compile their toolchian and perform a quick 
 remote debug but it just failed. So I looked into rene-fonseca's [docker version RISC-V 
 toolchain](https://github.com/rene-fonseca/docker-riscv) and rewrote into my version. 
 
