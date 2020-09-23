@@ -25,10 +25,12 @@ RUN mkdir -p /opt/riscv32 \
     && mkdir -p /opt/riscv64 \
     && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) && make clean \
+    && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) linux && make clean \
     # Here we build 64 bits version
     ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) && make clean \
+    && ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) linux && make clean \
     && rm -rf /tmp/riscv-gnu-toolchain
 

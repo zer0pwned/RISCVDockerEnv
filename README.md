@@ -20,7 +20,7 @@ to modify the Docker file and build your own image. Just cd into the repository 
 `docker build . -t riscv-toolchain`
 
 ```bash
-docker run --name "riscv_toolchain" -it 
+docker run --name "riscv-toolchain" -it pwn2de4d/riscv-toolchain:latest
 ```
 
 ## What's included 
