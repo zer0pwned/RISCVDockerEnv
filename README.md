@@ -15,9 +15,9 @@ toolchain](https://github.com/rene-fonseca/docker-riscv) and rewrote into my ver
 
 ## How to use.
 
-For now I haven't upload the generated artifact on Docker Hub but you should be able 
+~~For now I haven't upload the generated artifact on Docker Hub but you should be able 
 to modify the Docker file and build your own image. Just cd into the repository and 
-`docker build . -t riscv-toolchain`
+`docker build . -t riscv-toolchain`~~
 
 ```bash
 docker run --name "riscv-toolchain" -it pwn2de4d/riscv-toolchain:latest
