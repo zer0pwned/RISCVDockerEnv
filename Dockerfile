@@ -10,10 +10,7 @@ RUN apt -y update \
     bc zlib1g-dev libexpat-dev git 
 
 # Build 32/64 bits RISC-V toolchain from source code
-FROM build_env AS build_riscv_toolchain_32_64
-
-RUN mkdir -p /opt/riscv32 \
-    && mkdir -p /opt/riscv64 
+# FROM build_env AS build_riscv_toolchain_32_64
     
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
@@ -23,18 +20,20 @@ RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
 # is the gdb functionality 
 WORKDIR /tmp/riscv-gnu-toolchain
 
-# Build 32 bit RISC-V toolchain for both newlib and linux 
-RUN ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
+# Build 32/64 bits RISC-V toolchain for both newlib and linux 
+RUN mkdir -p /opt/riscv32 \
+    && mkdir -p /opt/riscv64 \
+    && ./configure --prefix=/opt/riscv32 --with-arch=rv32gc --with-abi=ilp32d --enable-gdb \
     && make -j $(nproc) && make clean \
-    && make -j $(nproc) linux && make clean 
-
-# Build 64 bit RISC-V toolchain for both newlib and linux 
-RUN ./configure --prefix=/opt/riscv64 --enable-gdb \
+    && make -j $(nproc) linux && make clean \
+    # Here we build 64 bits version
+    ./configure --prefix=/opt/riscv64 --enable-gdb \
     && make -j $(nproc) && make clean \
-    && make -j $(nproc) linux && make clean 
+    && make -j $(nproc) linux && make clean \
+    && rm -rf /tmp/riscv-gnu-toolchain
 
 # Build QEMU for system emulation 
-FROM build_riscv_toolchain_32_64 AS build_qemu_system_32_64
+# FROM build_riscv_toolchain_32_64 AS build_qemu_system_32_64
 
 WORKDIR /tmp
 
@@ -46,14 +45,13 @@ RUN mkdir riscv-qemu-linux \
 WORKDIR /tmp/riscv-qemu-linux/qemu
 
 # Build qemu with system emulation 
-# Build target: riscv64-softmmu and riscv32-softmmu
+# Build target: riscv64-softmmu and riscv32-softmmu with system
 RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
     && make -j $(nproc) \
     && make install \
-    && make clean
-
-# DONE: Build qemu with user mode and we would like it to be statically linked
-RUN mkdir -p /opt/qemu-riscv-static \
+    && make clean \
+    && mkdir -p /opt/qemu-riscv-static \
+    # Build user mode riscv QEMU
     && ./configure --target-list=riscv32-linux-user,riscv64-linux-user \
     --static \
     --disable-system \
@@ -61,9 +59,10 @@ RUN mkdir -p /opt/qemu-riscv-static \
     --prefix=/opt/qemu-riscv-static \
     && make -j $(nproc) \
     && make install \
-    && make clean
+    && make clean \
+    && rm -rf /tmp/riscv-qemu-linux \
+    && rm -rf /var/lib/apt/lists/*
 
 # DONE: Clean all pulled and generated files
-RUN rm -rf /tmp/riscv-qemu-linux && rm -rf /tmp/riscv-gnu-toolchain
 
 WORKDIR /root

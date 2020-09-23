@@ -16,6 +16,16 @@ toolchain](https://github.com/rene-fonseca/docker-riscv) and rewrote into my ver
 ## How to use.
 
 For now I haven't upload the generated artifact on Docker Hub but you should be able 
-to modify the Docker file and build your own image.
+to modify the Docker file and build your own image. Just cd into the repository and 
+`docker build . -t riscv-toolchain`
 
-Just cd into the repository and `docker build . -t riscv-toolchain`
+```bash
+docker run --name "riscv_toolchain" -it 
+```
+
+## What's included 
+
+* 32/64 bit Statically linked user mode RISC-V QEMU, located at `/opt/qemu-riscv-static`
+* 32/64 bit System mode RISC-V QEMU, located at `/usr/local/bin`
+* 32 bit RISC-V toolchain, including GDB, located at `/opt/riscv32`
+* 64 bit RISC-V toolchain, including GDB, located at `/opt/riscv64`
