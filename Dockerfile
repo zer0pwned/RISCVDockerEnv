@@ -20,8 +20,11 @@ RUN apt -y update \
 # git layer takes about 5.94GB storage and makes the entire image size to 
 # 11.4GB. It's just insane so I just merged this part into compilation stage 
 
+WORKDIR /tmp
+
 # Build 32/64 bits RISC-V toolchain for both newlib and linux 
-RUN git clone --recursive https://github.com/riscv/riscv-gnu-toolchain \
+# I have 96 threads CPU on my server so I used jobs parameter 
+RUN git clone --depth=1 --jobs $(($(nproc)/4)) --recursive https://github.com/riscv/riscv-gnu-toolchain \
     && mkdir -p /opt/riscv32 \
     && mkdir -p /opt/riscv64 \
     && cd /tmp/riscv-gnu-toolchain \
