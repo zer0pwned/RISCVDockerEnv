@@ -9,7 +9,8 @@ RUN apt -y update \
     libmpc-dev libmpfr-dev libgmp-dev \
     python3 pkg-config libglib2.0-dev libpixman-1-dev gawk \
     build-essential bison flex texinfo gperf libtool patchutils \
-    bc zlib1g-dev libexpat-dev git 
+    bc zlib1g-dev libexpat-dev git \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
 
@@ -41,16 +42,19 @@ RUN ./configure --target-list=riscv32-softmmu,riscv64-softmmu \
 WORKDIR /tmp/riscv-qemu-linux/
 
 # Build risc-v 32/64 gdb with python3 enabled
-RUN git clone --depth=1 https://github.com/riscv/riscv-binutils-gdb.git \
+RUN apt update -y && apt install python3-dev \
+    && git clone --depth=1 https://github.com/riscv/riscv-binutils-gdb.git \
     && export CPPFLAGS='-I/usr/include/python3.6/' \
     && export LDFLAGS='-L/usr/lib/python3.6/' \
     && export LC_CTYPE=C.UTF-8 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1 \
     && mkdir /opt/riscv-binutils-gdb \
     && cd riscv-binutils-gdb \
     && ./configure --prefix=/opt/riscv64-binutils-gdb --target riscv64-unknown-elf -enable-multilib --with-python \
     && make -j $(nproc) \
     && make install \
-    && rm -rf /tmp/riscv-qemu-linux/riscv-binutils-gdb
+    && rm -rf /tmp/riscv-qemu-linux/riscv-binutils-gdb \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root
 # Install GEF for gdb https://github.com/hugsy/gef
