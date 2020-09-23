@@ -61,4 +61,4 @@ WORKDIR /root
 RUN pip3 install capstone unicorn keystone-engine ropper \
     && sh -c "$(curl -fsSL http://gef.blah.cat/sh)"
 
-
+ENV LC_CTYPE C.UTF-8
