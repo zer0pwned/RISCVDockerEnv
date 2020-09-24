@@ -50,7 +50,7 @@ docker run --name "riscv-toolchain-ctf" -it pwn2de4d/riscv-toolchain-ctf:latest
 
 ## Example
 
-GEF does not officially support RISC-V so it's not really same as doing RE for x86/ARM ELF.
+GEF does support RISC-V but I don't think it's the same as doing RE for x86/ARM ELF.
 
 ![Image of Main Breakpoint](https://raw.githubusercontent.com/niklaus520/RISCVDockerEnv/master/images/main_breakpoint.png)
 ![Image of stepi](https://raw.githubusercontent.com/niklaus520/RISCVDockerEnv/master/images/stepi.png)
