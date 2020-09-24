@@ -29,3 +29,28 @@ docker run --name "riscv-toolchain" -it pwn2de4d/riscv-toolchain:latest
 * 32/64 bit System mode RISC-V QEMU, located at `/usr/local/bin`
 * 32 bit RISC-V toolchain, including GDB, located at `/opt/riscv32`
 * 64 bit RISC-V toolchain, including GDB, located at `/opt/riscv64`
+
+---
+
+## For CTF Players
+
+I believe most CTF players only need QEMU and GDB functionalities rather than entire 
+toolchain. Time values a lot during CTF session so I wrote the `Dockerfile.ctf` for CTF 
+players. In this dockerfile, RISC-V GDB is configured to support Python 3.6. It also 
+supports debug both 32 and 64 version elf. QEMU is also compiled to support user and 
+system mode. I installed GEF, the enhanced GDB plugin, as well to assist debugging.
+
+To use this Docker image, you can build the Dockerfile by yourself, which cost way less 
+time than building the entire toolchain, or you can simple pull and run the image from 
+Docker hub. 
+
+```bash
+docker run --name "riscv-toolchain-ctf" -it pwn2de4d/riscv-toolchain-ctf:latest
+```
+
+## Example
+
+GEF does not officially support RISC-V so it's not really same as doing RE for x86/ARM ELF.
+
+![Image of Main Breakpoint](https://raw.githubusercontent.com/niklaus520/RISCVDockerEnv/master/images/main_breakpoint.png)
+![Image of stepi](https://raw.githubusercontent.com/niklaus520/RISCVDockerEnv/master/images/stepi.png)
