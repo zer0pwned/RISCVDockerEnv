@@ -52,6 +52,18 @@ docker run --name "riscv-toolchain-ctf" -it pwn2de4d/riscv-toolchain-ctf:latest
 
 GEF does support RISC-V but I don't think it's the same as doing RE for x86/ARM ELF.
 
+Make QEMU listen on 1234 port and wait for incoming connection with s and S option. Launch another 
+terminal, use compiled gdb exectuable file and remote into port 1234 on localhost. 
+
+```bash
+qemu-system-riscv32 -nographic -machine sifive_e -kernel /root/xxx.elf  -s -S
+```
+
+```bash
+/opt/riscv-binutils-gdb/bin/riscv64-unknown-elf-gdb -f /root/xxx.elf
+target remote 127.0.0.1:1234
+```
+
 ![Image of Main Breakpoint](https://raw.githubusercontent.com/niklaus520/RISCVDockerEnv/master/images/main_breakpoint.png)
 
 
