@@ -36,7 +36,7 @@ docker run --name "riscv-toolchain" -it pwn2de4d/riscv-toolchain:latest
 
 I believe most CTF players only need QEMU and GDB functionalities rather than the entire 
 toolchain. Time values a lot during CTF session so I wrote the `Dockerfile.ctf` for CTF 
-players. In this dockerfile, RISC-V GDB is configured to support Python 3.6. It also 
+players. In this dockerfile, RISC-V GDB is configured to support Python 3.8. It also 
 supports debugging both 32 and 64 bits version elf. QEMU is also compiled to support 
 user and system mode. I installed GEF, the enhanced GDB plugin, as well to assist debugging.
 
