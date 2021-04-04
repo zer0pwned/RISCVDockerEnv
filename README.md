@@ -53,10 +53,18 @@ docker run --name "riscv-toolchain-ctf" -it pwn2de4d/riscv-toolchain-ctf:latest
 GEF does support RISC-V but I don't think it's the same as doing RE for x86/ARM ELF.
 
 Make QEMU listen on 1234 port and wait for incoming connection with s and S option. Launch another 
-terminal, use compiled gdb exectuable file and remote into port 1234 on localhost. 
+terminal, use compiled gdb exectuable file and remote into port 1234 on localhost. In the 
+following code, we use qemu-system to run/debug an executable file built for SiFive. 
 
 ```bash
 qemu-system-riscv32 -nographic -machine sifive_e -kernel /root/xxx.elf  -s -S
+```
+
+If you are going to run/debug statically linked Linux ELF file with qemu, then you should 
+choose qemu-user instead of qemu-system. For example:
+
+```bash
+/opt/qemu-riscv-static/bin/qemu-riscv64 -g 1234 /root/xxx.elf 
 ```
 
 ```bash
