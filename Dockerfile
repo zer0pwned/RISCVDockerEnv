@@ -7,7 +7,7 @@ RUN apt -y update \
     libmpc-dev libmpfr-dev libgmp-dev \
     python3 pkg-config libglib2.0-dev libpixman-1-dev gawk \
     build-essential bison flex texinfo gperf libtool patchutils \
-    bc zlib1g-dev libexpat-dev git 
+    bc zlib1g-dev libexpat-dev git ninja-build
 
 # Build 32/64 bits RISC-V toolchain from source code
 # FROM build_env AS build_riscv_toolchain_32_64
@@ -45,10 +45,10 @@ RUN git clone --depth=1 --jobs $(($(nproc)/4)) --recursive https://github.com/ri
 
 WORKDIR /tmp
 
-# Use QEMU v5.0.0, keep the same version as RISC-V
+# Use QEMU v7.0.0, keep the same version as RISC-V
 RUN mkdir riscv-qemu-linux \ 
     && cd riscv-qemu-linux \
-    && git clone --depth=1 --branch=v5.0.0 https://github.com/qemu/qemu
+    && git clone --depth=1 --branch=v7.0.0 https://github.com/qemu/qemu
 
 WORKDIR /tmp/riscv-qemu-linux/qemu
 
